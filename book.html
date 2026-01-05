@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Books</title>
+<link rel="icon" href="assets/b.ico" type="image/x-icon">
+<link rel="preload" href="assets/Adelphe-Trouble-GerminalRegular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/layout.css">
+<style>
+  html, body { overflow-y: auto; scrollbar-width: none; margin:0; padding:0; }
+  html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; }
+  html {
+    background: #ffffff;
+    overflow-x: hidden;
+  }
+  body { 
+    background:#ffffff; 
+    color:#000; 
+    font-family: 'AdelpheTrouble', var(--font);
+    font-size: 13.3px;
+    overflow-x: hidden;
+  }
+
+  .book-list { 
+    width: 560px; 
+    max-width: 90vw; 
+    margin: 18px auto 60px; 
+  }
+
+  .book-list ul { 
+    list-style:none; 
+    padding:0; 
+    margin:0; 
+  }
+
+  .book-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start; /* 书名靠顶部对齐 */
+    gap: 24px;
+    padding:6px 0; 
+    border-bottom: var(--line) solid var(--color); 
+    flex-wrap: nowrap;
+  }
+
+  .book-list li:last-child { 
+    border-bottom: var(--line) solid var(--color); 
+  }
+
+  .book-title,
+  .book-author {
+    display: block;
+    font-family: var(--font);
+    line-height: 1.4;
+    word-break: break-word;
+  }
+
+  .book-title {
+    flex: 1 1 50%;
+    min-width: 0;
+    text-align: left;
+  }
+
+  .book-author {
+    flex: 0 1 50%;
+    text-align: right;
+    min-width: 0;
+    align-self: flex-end; 
+  }
+
+
+  body.standalone .book-list {
+    animation: contentSlideInFromRight var(--dur) var(--ease) both;
+  }
+
+  @media (max-width: 768px) {
+    body {
+      font-size: 11px;
+      padding: 0;
+      background-attachment: fixed;
+    }
+    .book-list { 
+      width: min(460px, calc(100vw - var(--sidebar-width-mobile) - 40px));
+      margin-left: calc((100vw - var(--sidebar-width-mobile) - min(460px, calc(100vw - var(--sidebar-width-mobile) - 40px))) / 1.8);
+      margin-right: auto;
+      margin-top: 0px;
+      margin-bottom: 150px;
+    }
+    .book-list li {
+      gap: 12px;
+      padding: 3px 0;
+    }
+    .book-author {
+      flex: 0 1 50%;
+      text-align: right;
+    }
+  }
+</style>
+</head>
+
+<body>
+
+<script>
+if (window.top === window.self) {
+  document.body.classList.add('standalone');
+}
+</script>
+
+  <div class="book-list content-slide-in">
+    <ul id="bookItems"></ul>
+  </div>
+
+  <script>
+    fetch('assets/booklist.txt')
+      .then(r => r.text())
+      .then(txt => {
+        const lines = txt.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
+        const ul = document.getElementById('bookItems');
+        lines.forEach(line => {
+          const { title, author } = parseBookLine(line);
+          const li = document.createElement('li');
+
+          const titleSpan = document.createElement('span');
+          titleSpan.className = 'book-title';
+          titleSpan.textContent = title;
+
+          const authorSpan = document.createElement('span');
+          authorSpan.className = 'book-author';
+          authorSpan.textContent = author;
+
+          li.appendChild(titleSpan);
+          li.appendChild(authorSpan);
+          ul.appendChild(li);
+        });
+      })
+      .catch(() => {
+        const ul = document.getElementById('bookItems');
+        const li = document.createElement('li');
+        li.textContent = 'empty list（assets/booklist.txt）。';
+        ul.appendChild(li);
+      });
+
+    function parseBookLine(line) {
+      const commentIndex = line.indexOf('//');
+      if (commentIndex !== -1) {
+        const title = line.slice(0, commentIndex).trim();
+        const author = line.slice(commentIndex + 2).trim();
+        return { title, author };
+      }
+      return { title: line, author: '' };
+    }
+  </script>
+</body>
+</html>
