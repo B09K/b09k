@@ -4,36 +4,35 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>About</title>
-  <link rel="icon" href="assets/b.ico" type="image/x-icon" />
 
+  <link rel="icon" href="assets/b.ico" type="image/x-icon" />
   <link rel="preload" href="assets/Adelphe-Trouble-GerminalRegular.woff2" as="font" type="font/woff2" crossorigin>
+
   <link rel="stylesheet" href="css/base.css" />
   <link rel="stylesheet" href="css/layout.css" />
 
   <style>
-    html, body { 
-      overflow-y: auto; 
-      scrollbar-width: none; 
+    html, body {
       margin: 0;
       padding: 0;
-    }
-    html::-webkit-scrollbar, body::-webkit-scrollbar { 
-      width: 0; 
-      height: 0; 
-    }
-    html {
-      background: #fff;
+      overflow-y: auto;
       overflow-x: hidden;
+      scrollbar-width: none;
     }
+
+    html::-webkit-scrollbar,
+    body::-webkit-scrollbar {
+      width: 0;
+      height: 0;
+    }
+
     body {
       background: #fff;
-      background-attachment: fixed;
       color: #000;
       font-family: 'AdelpheTrouble', var(--font);
       font-size: 13.3px;
       line-height: 19px;
       -webkit-text-size-adjust: 100%;
-      overflow-x: hidden;
     }
 
     .about-wrapper {
@@ -45,7 +44,7 @@
       max-width: 90vw;
       margin: 18px auto 60px;
       text-align: left;
-      white-space: pre-line; 
+      white-space: pre-line;
       box-sizing: border-box;
     }
 
@@ -65,20 +64,22 @@
     @media (max-width: 768px) {
       body {
         font-size: 12px;
-        padding: 0;
-        background-attachment: fixed;
       }
+
       .about-content {
         width: min(460px, calc(100vw - var(--sidebar-width-mobile) - 40px));
         margin-top: 0;
         margin-bottom: 150px;
-        margin-left: calc((100vw - var(--sidebar-width-mobile) - min(460px, calc(100vw - var(--sidebar-width-mobile) - 40px))) / 1.8);
+        margin-left: calc(
+          (100vw - var(--sidebar-width-mobile) - min(460px, calc(100vw - var(--sidebar-width-mobile) - 40px)))
+          / 1.8
+        );
         margin-right: auto;
         font-size: 12px;
         line-height: 17px;
       }
     }
-    
+
     body.standalone .about-wrapper {
       animation: contentSlideInFromRight var(--dur) var(--ease) both;
     }
@@ -88,58 +89,88 @@
 <body>
 
 <script>
-if (window.top === window.self) {
-  document.body.classList.add('standalone');
-}
+  // standalone mode detection
+  if (window.top === window.self) {
+    document.body.classList.add('standalone');
+  }
 </script>
-  <div class="about-wrapper content-slide-in">
-    <div class="about-content" id="aboutContent"></div>
-  </div>
 
-  <script>
-    function convertEmailToLink(text) {
-      const emailRegex = /([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/g;
-      return text.replace(emailRegex, '<a href="mailto:$1">$1</a>');
-    }
+<div class="about-wrapper content-slide-in">
+  <div class="about-content" id="aboutContent"></div>
+</div>
 
-    fetch('assets/about.txt')
-      .then(r => r.text())
-      .then(txt => {
-        const lines = txt.split(/\r?\n/);
-        const container = document.getElementById('aboutContent');
-        let currentParagraph = [];
-        
-        lines.forEach((line, index) => {
-          if (line.trim() === '') {
-            if (currentParagraph.length > 0) {
-              const p = document.createElement('p');
-              const paragraphText = currentParagraph.join('\n');
-              p.innerHTML = convertEmailToLink(paragraphText);
-              container.appendChild(p);
-              currentParagraph = [];
-            }
-    
-            const emptyP = document.createElement('p');
-            emptyP.textContent = '';
-            container.appendChild(emptyP);
-          } else {
-            currentParagraph.push(line);
+<script>
+  /**
+   * Convert plain text to links:
+   * - email → mailto
+   * - Instagram → external link
+   * - xiaohongshu → external link
+   */
+  function convertTextToLinks(text) {
+    let result = text;
+
+    // email
+    const emailRegex = /([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/g;
+    result = result.replace(
+      emailRegex,
+      '<a href="mailto:$1">$1</a>'
+    );
+
+    // Instagram
+    result = result.replace(
+      /\bInstagram\b/g,
+      '<a href="https://www.instagram.com/b09k.book?igsh=MTZ2MGtiMzF4Ymxi&utm_source=qr" target="_blank" rel="noopener noreferrer">Instagram</a>'
+    );
+
+    // xiaohongshu
+    result = result.replace(
+      /\bXiaohongshu\b/g,
+      '<a href="https://xhslink.com/m/vVdAdZrISn" target="_blank" rel="noopener noreferrer">Xiaohongshu</a>'
+    );
+
+    return result;
+  }
+
+  fetch('assets/about.txt')
+    .then(r => r.text())
+    .then(txt => {
+      const lines = txt.split(/\r?\n/);
+      const container = document.getElementById('aboutContent');
+
+      let currentParagraph = [];
+
+      lines.forEach(line => {
+        if (line.trim() === '') {
+          if (currentParagraph.length > 0) {
+            const p = document.createElement('p');
+            const paragraphText = currentParagraph.join('\n');
+            p.innerHTML = convertTextToLinks(paragraphText);
+            container.appendChild(p);
+            currentParagraph = [];
           }
-        });
-        
-        if (currentParagraph.length > 0) {
-          const p = document.createElement('p');
-          const paragraphText = currentParagraph.join('\n');
-          p.innerHTML = convertEmailToLink(paragraphText);
-          container.appendChild(p);
+
+          const emptyP = document.createElement('p');
+          emptyP.textContent = '';
+          container.appendChild(emptyP);
+        } else {
+          currentParagraph.push(line);
         }
-      })
-      .catch(() => {
-        const container = document.getElementById('aboutContent');
-        const p = document.createElement('p');
-        p.textContent = 'Failed to load content.';
-        container.appendChild(p);
       });
-  </script>
+
+      if (currentParagraph.length > 0) {
+        const p = document.createElement('p');
+        const paragraphText = currentParagraph.join('\n');
+        p.innerHTML = convertTextToLinks(paragraphText);
+        container.appendChild(p);
+      }
+    })
+    .catch(() => {
+      const container = document.getElementById('aboutContent');
+      const p = document.createElement('p');
+      p.textContent = 'Failed to load content.';
+      container.appendChild(p);
+    });
+</script>
+
 </body>
 </html>
