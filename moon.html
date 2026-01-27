@@ -35,14 +35,12 @@
   .container {
     width: 560px;
     max-width: 80vw;
-    /* 保持与其他页面一致的间距 */
     margin: 40px auto 100px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 30px; /* 增加间距让导航更清晰 */
+    gap: 30px; 
     box-sizing: border-box;
-    /* 核心：向左补偿视觉中心，开启硬件加速 */
     transform: translate3d(-30px, 0, 0);
     opacity: 0;
     animation: slideInSimple 1.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;

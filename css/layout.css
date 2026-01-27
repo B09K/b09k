@@ -66,16 +66,11 @@ body.edge-nudge::before {
   pointer-events: none;
 }
 
-
-
-
 .tab {
   position: relative;
   width: var(--tab-w);
   height: 100%;
-
   border-right: none;
-  /* background: #fff; */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -92,12 +87,15 @@ body.edge-nudge::before {
 .tab .short { opacity: 1; }
 .tab .full  { opacity: 0; margin-left: 8px; }
 
+/* ===== 优化后的激活态标签：解决抖动，实现丝滑滑动 ===== */
 .tab.active {
   position: fixed;         
   top: 0;
-  left: 50%;              
-  transform: translateX(-50%);
-  width: calc(100% - (var(--gap) * 2));
+  /* 关键修改：直接固定左右间距，确保宽度在动画中不再变化 */
+  left: var(--gap);
+  right: var(--gap);
+  width: auto; 
+  
   height: 100vh;
   padding: 120px var(--gap) var(--gap);
   box-sizing: border-box;
@@ -105,30 +103,36 @@ body.edge-nudge::before {
   scrollbar-width: none;
   z-index: 3000;
   justify-content: flex-start;
-  animation: slideFromRightToCenter 0.3s var(--ease);
-  pointer-events: auto;
   background: #fff;
+  
+  /* 使用纯位移动画，保持原始 0.3s 节奏 */
+  animation: slideInPure 0.1s var(--ease) forwards;
+  will-change: transform, opacity;
+  pointer-events: auto;
 }
 
-@keyframes slideFromRightToCenter {
+/* 隐藏滚动条 */
+.tab.active::-webkit-scrollbar { width: 0; height: 0; }
+
+/* 纯位移加速动画 */
+@keyframes slideInPure {
   from {
+    transform: translateX(100%);
     opacity: 0;
-    left: calc(100% - var(--gap));
-    transform: translateX(-100%);
-    width: calc(100vw - (var(--tab-w) * 5) - var(--gap));
   }
   to {
+    transform: translateX(0);
     opacity: 1;
-    left: 50%;
-    transform: translateX(-50%);
-    width: calc(100vw - (var(--gap) * 2));
   }
 }
 
 .tab.active iframe {
   display: block;
+  width: 100%;
   height: calc(100vh - 120px - var(--gap));
-  animation: fadeInFromRight 0.8s var(--ease);
+  border: 0;
+  background: #fff;
+  animation: fadeInFromRight 0.7s var(--ease);
 }
 
 @keyframes fadeInFromRight {
@@ -142,9 +146,6 @@ body.edge-nudge::before {
   }
 }
 
-.tab.active::-webkit-scrollbar { width: 0; height: 0; }
-
-
 @media (max-width: 768px) {
   :root {
     --tab-w-mobile: 8px; 
@@ -153,13 +154,14 @@ body.edge-nudge::before {
   }
   
   .tab.active {
-    width: calc(100vw - (var(--gap) * 2));
+    /* 保持左右固定宽度逻辑，仅调整顶部边距 */
     padding: 90px var(--gap) var(--gap);
+    left: var(--gap);
+    right: var(--gap);
+    width: auto;
     height: 100vh;
-    background: #fff;
   }
   
-
   .sidebar::before {
     width: var(--sidebar-width-mobile);
     right: var(--gap);
@@ -188,7 +190,6 @@ body.edge-nudge::before {
   }
 }
 
-
 .tab iframe {
   width: 100%;
   height: 100%;
@@ -196,23 +197,6 @@ body.edge-nudge::before {
   background: #fff;
   display: block; 
   margin: 0;
-}
-
-
-@keyframes contentSlideInFromRight {
-  from {
-    opacity: 0;
-    transform: translateX(60px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-.content-slide-in {
-  opacity: 0;
-  animation: contentSlideInFromRight 0.8s var(--ease) forwards;
 }
 
 .tab-labels {
