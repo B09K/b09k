@@ -7,7 +7,7 @@
 <link rel="icon" href="assets/b.ico" type="image/x-icon">
 <link rel="preload" href="assets/Adelphe-Trouble-GerminalRegular.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/base.css">
-<link rel="stylesheet" href="css/layout.css">
+
 <style>
   html, body { 
     overflow-y: auto; 
@@ -33,14 +33,17 @@
 
   .container {
     width: 560px;
-    max-width: 90vw;
-    margin: 18px auto 60px;
+    max-width: 80vw;
+    margin: 40px auto 100px;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 20px;
     box-sizing: border-box;
     font-size: 13.3px;
+    transform: translate3d(-30px, 0, 0);
+    opacity: 0;
+    animation: slideInSimple 1.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
   }
   
   .image-grid {
@@ -74,7 +77,6 @@
     width: 100%;
     aspect-ratio: 3 / 2;
     overflow: hidden;
-    /* border: 0.5px solid #000; */
     box-sizing: border-box;
   }
   
@@ -107,16 +109,14 @@
     }
     
     .container {
-      width: min(460px, calc(100vw - var(--sidebar-width-mobile) - 40px));
-      margin-left: calc((100vw - var(--sidebar-width-mobile) - min(460px, calc(100vw - var(--sidebar-width-mobile) - 40px))) / 1.8);
-      margin-right: auto;
-      margin-top: 10px;
-      margin-bottom: 150px;
+      width: 82vw;
+      margin: 20px auto 150px;
+      transform: translate3d(-20px, 0, 0);
       gap: 15px;
       font-size: 12px;
       box-sizing: border-box;
     }
-    
+
     .image-grid {
       grid-template-columns: repeat(2, minmax(0, calc(50% - 5px)));
       gap: 10px;
@@ -140,9 +140,30 @@
       font-size: 12px;
     }
   }
-  
-  body.standalone .container {
-    animation: contentSlideInFromRight var(--dur) var(--ease) both;
+    /* PC 端轨迹 */
+  @keyframes slideInSimple {
+    from {
+      opacity: 0;
+      transform: translate3d(10px, 0, 0);
+    }
+    to {
+      opacity: 1;
+      transform: translate3d(-30px, 0, 0); 
+    }
+  }
+
+  /* 移动端轨迹 */
+  @media (max-width: 768px) {
+    @keyframes slideInSimple {
+      from {
+        opacity: 0;
+        transform: translate3d(5px, 0, 0); 
+      }
+      to {
+        opacity: 1;
+        transform: translate3d(-20px, 0, 0);
+      }
+    }
   }
 </style>
 </head>
@@ -153,9 +174,8 @@ if (window.top === window.self) {
   document.body.classList.add('standalone');
 }
 </script>
-
-  <div class="container content-slide-in">
-    <div class="image-grid" id="imageGrid"></div>
+<div class="container">
+ <div class="image-grid" id="imageGrid"></div>
   </div>
 
   <script>

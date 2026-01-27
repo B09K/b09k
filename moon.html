@@ -7,7 +7,7 @@
 <link rel="icon" href="assets/b.ico" type="image/x-icon">
 <link rel="preload" href="assets/Adelphe-Trouble-GerminalRegular.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/base.css">
-<link rel="stylesheet" href="css/layout.css">
+<!-- <link rel="stylesheet" href="css/layout.css"> -->
 <style>
   html, body { 
     overflow-y: auto; 
@@ -34,13 +34,18 @@
   
   .container {
     width: 560px;
-    max-width: 90vw;
-    margin: 18px auto 60px;
+    max-width: 80vw;
+    /* 保持与其他页面一致的间距 */
+    margin: 40px auto 100px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 20px;
+    gap: 30px; /* 增加间距让导航更清晰 */
     box-sizing: border-box;
+    /* 核心：向左补偿视觉中心，开启硬件加速 */
+    transform: translate3d(-30px, 0, 0);
+    opacity: 0;
+    animation: slideInSimple 1.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
   }
   
   .description {
@@ -138,15 +143,12 @@
     }
 
     .container {
-      width: min(460px, calc(100vw - var(--sidebar-width-mobile) - 40px));
-      margin-left: calc((100vw - var(--sidebar-width-mobile) - min(460px, calc(100vw - var(--sidebar-width-mobile) - 40px))) / 1.8);
-      margin-right: auto;
-      margin-top: 10px;
-      margin-bottom: 150px;
-      gap: 15px;
-      box-sizing: border-box;
+      width: 82vw;
+      margin: 20px auto 150px;
+      /* 移动端位移补偿 */
+      transform: translate3d(-20px, 0, 0);
+      gap: 20px;
     }
-
     .description {
       padding: 0;
       width: 100%;
@@ -183,11 +185,45 @@
       position: relative;
     }
   }
+  /* PC 端轨迹 */
+  @keyframes slideInSimple {
+    from {
+      opacity: 0;
+      transform: translate3d(10px, 0, 0);
+    }
+    to {
+      opacity: 1;
+      transform: translate3d(-30px, 0, 0); 
+    }
+  }
+
+  /* 移动端轨迹 */
+  @media (max-width: 768px) {
+    @keyframes slideInSimple {
+      from {
+        opacity: 0;
+        transform: translate3d(5px, 0, 0); 
+      }
+      to {
+        opacity: 1;
+        transform: translate3d(-20px, 0, 0);
+      }
+    }
+  }
+
+  /* 新增：年份切换时的内容淡入动画 */
+  .fade-in-quick {
+    animation: fadeInQuick 0.5s ease-out forwards;
+  }
+  @keyframes fadeInQuick {
+    from { opacity: 0; transform: translate3d(0, 5px, 0); }
+    to { opacity: 1; transform: translate3d(0, 0, 0); }
+  }
 </style>
 </head>
 <body>
 
-  <div class="container content-slide-in">
+  <div class="container">
     <div class="description">
       <p>Imagine this is a land of the Moon.</p>
       <p>It follows the lunar calendar, and at every</p>

@@ -7,7 +7,7 @@
 <link rel="icon" href="assets/b.ico" type="image/x-icon">
 <link rel="preload" href="assets/Adelphe-Trouble-GerminalRegular.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/base.css">
-<link rel="stylesheet" href="css/layout.css">
+<!-- <link rel="stylesheet" href="css/layout.css"> -->
 <style>
   html, body { overflow-y: auto; scrollbar-width: none; margin:0; padding:0; }
   html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; }
@@ -25,8 +25,11 @@
 
   .book-list { 
     width: 560px; 
-    max-width: 90vw; 
-    margin: 18px auto 60px; 
+    max-width: 80vw; 
+    margin: 40px auto 100px; 
+    transform: translateX(-30px);
+    opacity: 0;
+    animation: slideInSimple 1.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
   }
 
   .book-list ul { 
@@ -38,7 +41,7 @@
   .book-list li {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start; /* 书名靠顶部对齐 */
+    align-items: flex-start; 
     gap: 24px;
     padding:6px 0; 
     border-bottom: var(--line) solid var(--color); 
@@ -70,11 +73,6 @@
     align-self: flex-end; 
   }
 
-
-  body.standalone .book-list {
-    animation: contentSlideInFromRight var(--dur) var(--ease) both;
-  }
-
   @media (max-width: 768px) {
     body {
       font-size: 11px;
@@ -82,11 +80,9 @@
       background-attachment: fixed;
     }
     .book-list { 
-      width: min(460px, calc(100vw - var(--sidebar-width-mobile) - 40px));
-      margin-left: calc((100vw - var(--sidebar-width-mobile) - min(460px, calc(100vw - var(--sidebar-width-mobile) - 40px))) / 1.8);
-      margin-right: auto;
-      margin-top: 0px;
-      margin-bottom: 150px;
+      width: 85vw;
+      margin: 20px auto 150px;
+      transform: translateX(-20px);
     }
     .book-list li {
       gap: 12px;
@@ -95,8 +91,33 @@
     .book-author {
       flex: 0 1 50%;
       text-align: right;
+    }    
+  }
+
+
+@keyframes slideInSimple {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0px); 
+  }
+}
+
+@media (max-width: 768px) {
+  @keyframes slideInSimple {
+    from {
+      opacity: 0;
+      transform: translateX(25px); 
+    }
+    to {
+      opacity: 1;
+      transform: translateX(-20px);
     }
   }
+}
 </style>
 </head>
 
@@ -107,8 +128,7 @@ if (window.top === window.self) {
   document.body.classList.add('standalone');
 }
 </script>
-
-  <div class="book-list content-slide-in">
+<div class="book-list">
     <ul id="bookItems"></ul>
   </div>
 
